@@ -1,0 +1,134 @@
+name: Builder
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "gmc500-bridge/**"
+  push:
+    branches:
+      - main
+    paths:
+      - "gmc500-bridge/**"
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+env:
+  ADDON_DIR: gmc500-bridge
+  IMAGE_NAME: ghcr.io/lexorius/ha-gq-gmc500/gmc500-bridge
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Hassfest
+        uses: home-assistant/actions/hassfest@master
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Ruff
+        run: pip install ruff
+
+      - name: Ruff check
+        run: ruff check ${{ env.ADDON_DIR }}/app.py --select E,F,W,I --ignore E501
+
+  build:
+    name: Build ${{ matrix.arch }}
+    needs: lint
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [aarch64, amd64]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Resolve version
+        id: version
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
+            echo "version=${GITHUB_REF#refs/tags/v}" >> "$GITHUB_OUTPUT"
+            echo "push=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=dev" >> "$GITHUB_OUTPUT"
+            echo "push=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Map arch to docker platform
+        id: platform
+        run: |
+          case "${{ matrix.arch }}" in
+            aarch64) echo "platform=linux/arm64" >> "$GITHUB_OUTPUT" ;;
+            amd64)   echo "platform=linux/amd64" >> "$GITHUB_OUTPUT" ;;
+          esac
+
+      - name: Build and push (${{ matrix.arch }})
+        uses: docker/build-push-action@v6
+        with:
+          context: ./${{ env.ADDON_DIR }}
+          file: ./${{ env.ADDON_DIR }}/Dockerfile
+          platforms: ${{ steps.platform.outputs.platform }}
+          build-args: |
+            BUILD_ARCH=${{ matrix.arch }}
+          tags: |
+            ${{ env.IMAGE_NAME }}-${{ matrix.arch }}:${{ steps.version.outputs.version }}
+            ${{ env.IMAGE_NAME }}-${{ matrix.arch }}:latest
+          push: ${{ steps.version.outputs.push }}
+
+  release:
+    name: GitHub release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract changelog section
+        id: changelog
+        run: |
+          version="${GITHUB_REF#refs/tags/v}"
+          # Snippet zwischen "## $version" und der nächsten "## "-Überschrift
+          awk -v ver="$version" '
+            $0 ~ "^## " ver { flag=1; next }
+            flag && /^## / { exit }
+            flag { print }
+          ' ${{ env.ADDON_DIR }}/CHANGELOG.md > release_notes.md
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: GMC-500+ Bridge ${{ steps.changelog.outputs.version }}
+          body_path: release_notes.md
+          draft: false
+          prerelease: false

@@ -1,0 +1,11 @@
+.git
+.github
+.gitignore
+.dockerignore
+CHANGELOG.md
+DOCS.md
+README.md
+__pycache__/
+*.pyc
+*.swp
+.DS_Store
