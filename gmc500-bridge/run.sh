@@ -12,6 +12,8 @@ export DEVICE_ID="$(bashio::config 'device_id')"
 export MQTT_BASE_TOPIC="$(bashio::config 'mqtt_base_topic')"
 export EXPECTED_AID="$(bashio::config 'expected_aid')"
 export EXPECTED_GID="$(bashio::config 'expected_gid')"
+export REDIRECT_URL="$(bashio::config 'redirect_url')"
+export REDIRECT_STATUS="$(bashio::config 'redirect_status')"
 export LOG_LEVEL="$(bashio::config 'log_level' | tr '[:lower:]' '[:upper:]')"
 
 # --- MQTT-Service vom Supervisor ------------------------------------------------
@@ -37,6 +39,9 @@ bashio::log.info "  Gerätekennung: ${DEVICE_ID}"
 bashio::log.info "  Base-Topic:  ${MQTT_BASE_TOPIC}"
 if [[ -n "${EXPECTED_AID}" || -n "${EXPECTED_GID}" ]]; then
     bashio::log.info "  Whitelist:   AID=${EXPECTED_AID:-*} GID=${EXPECTED_GID:-*}"
+fi
+if [[ -n "${REDIRECT_URL}" ]]; then
+    bashio::log.info "  Redirect:    unbekannte Pfade -> ${REDIRECT_URL} (HTTP ${REDIRECT_STATUS})"
 fi
 
 cd /app

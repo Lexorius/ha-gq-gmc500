@@ -15,9 +15,9 @@ import time
 from datetime import datetime, timezone
 
 import paho.mqtt.client as mqtt
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, redirect, request
 
-__version__ = "2.0.0"
+__version__ = "2.1.0"
 
 # ---------- Konfiguration aus Environment ----------
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
@@ -33,6 +33,14 @@ MQTT_BASE_TOPIC = os.getenv("MQTT_BASE_TOPIC", "gmc500")
 
 EXPECTED_AID = os.getenv("EXPECTED_AID", "").strip()
 EXPECTED_GID = os.getenv("EXPECTED_GID", "").strip()
+
+REDIRECT_URL = os.getenv("REDIRECT_URL", "").strip()
+try:
+    REDIRECT_STATUS = int(os.getenv("REDIRECT_STATUS", "302"))
+except ValueError:
+    REDIRECT_STATUS = 302
+if REDIRECT_STATUS not in (301, 302, 307, 308):
+    REDIRECT_STATUS = 302
 
 DEVICE_NAME = os.getenv("DEVICE_NAME", "GMC-500+")
 DEVICE_ID = os.getenv("DEVICE_ID", "gmc500plus")
@@ -199,7 +207,20 @@ def health():
         version=__version__,
         mqtt_connected=mqtt_client.is_connected(),
         state_topic=STATE_TOPIC,
+        redirect_url=REDIRECT_URL or None,
     )
+
+
+@app.errorhandler(404)
+def _not_found(_err):
+    """Leitet alles, was nicht zu einer bekannten Route gehört, auf REDIRECT_URL um."""
+    if REDIRECT_URL:
+        log.info(
+            "Redirect: %s %s -> %s (HTTP %d)",
+            request.method, request.path, REDIRECT_URL, REDIRECT_STATUS,
+        )
+        return redirect(REDIRECT_URL, code=REDIRECT_STATUS)
+    return "Not Found", 404
 
 
 start_mqtt()

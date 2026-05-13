@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.1.0 — 2026-05-13
+
+### Neu
+
+- **Redirect-Modus**: Aufrufe auf unbekannte Pfade können jetzt auf eine
+  konfigurierbare URL umgeleitet werden. Geräte-Telemetrie-Pfade
+  (`/log2.asp`, `/gmc500`, `/log`) und `/health` bleiben unverändert.
+  - Neue Option `redirect_url` (leer = aus, Default).
+  - Neue Option `redirect_status` (`301`, `302`, `307` oder `308`; Default `302`).
+- `/health` zeigt das aktuelle Redirect-Ziel mit an.
+
 ## 2.0.0 — 2026-05-13
 
 ### Breaking

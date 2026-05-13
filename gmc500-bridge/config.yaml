@@ -1,5 +1,5 @@
 name: "GMC-500+ Bridge"
-version: "2.0.0"
+version: "2.1.0"
 slug: "gmc500_bridge"
 description: "Empfängt Daten eines GQ Electronics GMC-500+ Geigerzählers und veröffentlicht sie via MQTT (Auto-Discovery)."
 url: "https://github.com/Lexorius/ha-gq-gmc500"
@@ -26,6 +26,8 @@ options:
   mqtt_base_topic: "gmc500"
   expected_aid: ""
   expected_gid: ""
+  redirect_url: ""
+  redirect_status: 302
   log_level: "info"
 schema:
   device_name: "str"
@@ -33,4 +35,6 @@ schema:
   mqtt_base_topic: "str"
   expected_aid: "str?"
   expected_gid: "str?"
+  redirect_url: "str?"
+  redirect_status: "list(301|302|307|308)"
   log_level: "list(debug|info|warning|error)"

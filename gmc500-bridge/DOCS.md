@@ -32,6 +32,26 @@ Whitelist für die `AID` des Geräts. Leer = alles akzeptieren.
 
 Whitelist für die `GID` des Geräts. Leer = alles akzeptieren.
 
+### Option: `redirect_url` (default: *leer*)
+
+Ist hier eine URL eingetragen, leitet das Add-on **alle Requests auf unbekannte Pfade** dorthin weiter. Praktisch, wenn jemand zufällig im Browser auf dem Port landet oder ein Scanner anklopft.
+
+Unverändert direkt beantwortet werden:
+
+- die GMC-Telemetrie-Pfade `/log2.asp`, `/gmc500`, `/log`
+- der Diagnose-Endpunkt `/health`
+
+Alles andere geht auf `redirect_url`. Erlaubt sind sowohl absolute URLs (`https://example.com/info`) als auch interne Pfade. Leer lassen = klassisches `404 Not Found`.
+
+### Option: `redirect_status` (default: `302`)
+
+HTTP-Statuscode des Redirects. Eines von:
+
+- `301` – Moved Permanently (wird vom Browser dauerhaft gecached)
+- `302` – Found (temporär, Standard)
+- `307` – Temporary Redirect (wie 302, behält Methode bei)
+- `308` – Permanent Redirect (wie 301, behält Methode bei)
+
 ### Option: `log_level` (default: `info`)
 
 Eines von `debug`, `info`, `warning`, `error`. `debug` zeigt jeden eingehenden Request.
