@@ -27,7 +27,7 @@ MQTT-Zugangsdaten **musst du nicht eintragen** – das Add-on holt sie automatis
 
 ## Port
 
-Der externe Port wird in der HA-UI im Tab **Netzwerk** des Add-ons eingestellt (Default `8088`). Genau diesen Port stellst du dann auch am Geigerzähler ein.
+Der externe Port wird in der HA-UI im Tab **Netzwerk** des Add-ons eingestellt. Default ist `80`, weil viele GMC-Geräte keine alternativen Ports unterstützen. Falls dein Gerät einen freien Port erlaubt, kannst du hier umstellen.
 
 ## GMC-500+ konfigurieren
 
@@ -37,7 +37,7 @@ Per **GQ GMC Data Viewer** (USB) unter `Settings → Other`:
 |---------------------|-------------------------------------------------------|
 | Website             | IP des HA-Hosts (z. B. `192.168.1.20`)                |
 | URL                 | `log2.asp` *(alternativ `gmc500` oder `log`)*         |
-| Port                | wie im Add-on (Default `8088`)                        |
+| Port                | wie im Add-on (Default `80`)                          |
 | User ID             | beliebig numerisch, z. B. `555`                       |
 | Geiger Counter ID   | beliebig numerisch, z. B. `01234`                     |
 | Period              | Sende-Intervall in Minuten, z. B. `1`                 |
@@ -49,7 +49,7 @@ Per **GQ GMC Data Viewer** (USB) unter `Settings → Other`:
 Aus dem HA-Netz heraus (z. B. SSH-Add-on):
 
 ```bash
-curl "http://localhost:8088/log2.asp?AID=555&GID=01234&CPM=23&ACPM=21.5&uSV=0.115"
+curl "http://localhost/log2.asp?AID=555&GID=01234&CPM=23&ACPM=21.5&uSV=0.115"
 ```
 
 Erwartet: Antwort `OK.ERR0` und ein Log-Eintrag im Add-on.

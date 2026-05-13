@@ -1,5 +1,5 @@
 name: "GMC-500+ Bridge"
-version: "2.1.0"
+version: "2.1.1"
 slug: "gmc500_bridge"
 description: "Empfängt Daten eines GQ Electronics GMC-500+ Geigerzählers und veröffentlicht sie via MQTT (Auto-Discovery)."
 url: "https://github.com/Lexorius/ha-gq-gmc500"
@@ -17,9 +17,9 @@ host_network: false
 services:
   - mqtt:need
 ports:
-  "80/tcp": 8088
+  "80/tcp": 80
 ports_description:
-  "80/tcp": "HTTP-Port, an dem der GMC-500+ seine Daten abliefert. Denselben Port im Gerät eintragen."
+  "80/tcp": "HTTP-Port, an dem der GMC-500+ seine Daten abliefert. Default 80, weil viele GMC-Geräte keinen anderen Port erlauben. Denselben Port im Gerät eintragen."
 options:
   device_name: "GMC-500+"
   device_id: "gmc500plus"

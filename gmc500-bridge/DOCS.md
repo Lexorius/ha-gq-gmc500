@@ -58,7 +58,9 @@ Eines von `debug`, `info`, `warning`, `error`. `debug` zeigt jeden eingehenden R
 
 ## Port
 
-Im Tab **Netzwerk** des Add-ons den externen Port wählen (Default `8088`). Genau diesen Port am Geigerzähler eintragen.
+Im Tab **Netzwerk** des Add-ons den externen Port wählen. **Default ist `80`**, weil viele GMC-Geräte keine anderen Ports unterstützen — sie senden grundsätzlich auf den HTTP-Standard-Port. Falls dein Gerät einen freien Port erlaubt, kannst du hier umstellen.
+
+> **Hinweis:** Port 80 ist auf dem HA-Host meist frei (HA-Frontend läuft auf 8123). Falls bereits ein anderer Webdienst auf Port 80 läuft, hier einen freien Port wählen — dann muss aber auch das Gerät den anderen Port unterstützen.
 
 ## GMC-500+ konfigurieren
 
@@ -68,7 +70,7 @@ Per **GQ GMC Data Viewer** (USB) unter `Settings → Other`:
 |-------------------|---------------------------------------------------|
 | Website           | IP des HA-Hosts (z. B. `192.168.1.20`)            |
 | URL               | `log2.asp` *(alternativ `gmc500` oder `log`)*     |
-| Port              | wie im Add-on (Default `8088`)                    |
+| Port              | wie im Add-on (Default `80`)                      |
 | User ID           | beliebig numerisch, z. B. `555`                   |
 | Geiger Counter ID | beliebig numerisch, z. B. `01234`                 |
 | Period            | Sende-Intervall in Minuten, z. B. `1`             |
@@ -80,7 +82,7 @@ Per **GQ GMC Data Viewer** (USB) unter `Settings → Other`:
 Aus dem HA-Netz heraus (z. B. SSH-Add-on):
 
 ```bash
-curl "http://localhost:8088/log2.asp?AID=555&GID=01234&CPM=23&ACPM=21.5&uSV=0.115"
+curl "http://localhost/log2.asp?AID=555&GID=01234&CPM=23&ACPM=21.5&uSV=0.115"
 ```
 
 Erwartet: Antwort `OK.ERR0` und ein Log-Eintrag im Add-on.
@@ -101,7 +103,7 @@ Erwartet: Antwort `OK.ERR0` und ein Log-Eintrag im Add-on.
 Das Add-on stellt unter `/health` einen Status-Endpunkt bereit:
 
 ```bash
-curl http://<HA-IP>:8088/health
+curl http://<HA-IP>/health
 # {"mqtt_connected":true,"state_topic":"gmc500/gmc500plus/state","status":"ok","version":"2.0.0"}
 ```
 

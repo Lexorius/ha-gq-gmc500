@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.1.1 — 2026-05-13
+
+### Geändert
+
+- **Default-Port von 8088 auf 80**, weil viele GMC-Geräte keinen anderen Port
+  unterstützen — sie senden grundsätzlich auf den HTTP-Standard-Port.
+  Bestehende Installationen behalten ihre eingestellte Port-Mapping;
+  die Änderung greift nur bei Neuinstallationen.
+
 ## 2.1.0 — 2026-05-13
 
 ### Neu

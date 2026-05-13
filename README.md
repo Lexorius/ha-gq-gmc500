@@ -22,8 +22,8 @@ Geigerzählers empfängt und via MQTT-Auto-Discovery an Home Assistant weiterlei
 2. URL eintragen: `https://github.com/Lexorius/ha-gq-gmc500` → *Add*.
 3. Im Store erscheint *GMC-500+ Bridge* → **Installieren**.
 4. Tab **Konfiguration**: Werte anpassen (oder Defaults lassen).
-5. Tab **Netzwerk**: externen Port wählen (Default `8088`).
-6. **Start**, dann den Geigerzähler auf `http://<HA-IP>:8088/log2.asp` und den gewählten Port konfigurieren.
+5. Tab **Netzwerk**: Port prüfen (Default `80`, weil viele GMC-Geräte keinen anderen Port unterstützen).
+6. **Start**, dann den Geigerzähler auf `http://<HA-IP>/log2.asp` und Port `80` konfigurieren.
 
 ### Variante B — lokal ohne GitHub
 
